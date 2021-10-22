@@ -13,17 +13,25 @@ function CounterProvider(props) {
   </CounterContext.Provider>
 }
 
-function CountDisplay() {
+const useCount = () => {
   const countContext = React.useContext(CounterContext);
 
-  const count = countContext.count;
+  if(!countContext) {
+
+    throw new Error('useCount should be used within a CounterProvider')
+  }
+
+  return countContext;
+}
+
+function CountDisplay() {
+ 
+  const {count} = useCount();
   return <div>{`The current count is ${count}`}</div>
 }
 
 function Counter() {
-  const countContext = React.useContext(CounterContext);
-  
-  const setCount = countContext.setCount
+  const {setCount} = useCount();
   const increment = () => setCount(c => c + 1)
   return <button onClick={increment}>Increment count</button>
 }
@@ -31,10 +39,6 @@ function Counter() {
 function App() {
   return (
     <div>
-      {/*
-        🐨 wrap these two components in the CountProvider so they can access
-        the CountContext value
-      */}
       <CounterProvider>
         <CountDisplay />
         <Counter />
